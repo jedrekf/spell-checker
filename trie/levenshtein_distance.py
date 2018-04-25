@@ -1,4 +1,5 @@
-import trie_node as TrieNode
+from trie import trie_node as TrieNode
+
 
 class LevenshteinDistance:
     def __init__(self):

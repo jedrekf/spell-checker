@@ -5,3 +5,4 @@ class ProblemInstance:
         self.tokens = []
         self.errors = []
         self.embeddings = None
+        self.is_error = []
