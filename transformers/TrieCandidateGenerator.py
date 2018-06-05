@@ -4,12 +4,13 @@ from instances.CandidateInstance import CandidateInstance
 
 
 class TrieCandidateGenerator:
-    def __init__(self, max_dist=2):
-        self.tree = LevenshteinDistance()
+    def __init__(self, max_dist=2, model=None):
+        self.tree = LevenshteinDistance(model)
         self.max_dist = max_dist
+        self.model = model
 
     def fit(self, x=None, y=None):
-        self.tree.create_trie(cfg.CORPUS_PATH)
+        self.tree.create_trie_list(self.model.get_corpus())
         return self
 
     def transform(self, x):
@@ -18,6 +19,5 @@ class TrieCandidateGenerator:
                 results = self.tree.search(error.word, self.max_dist)
                 for word, cost in results:
                     error.candidates.append(CandidateInstance(word, cost))
-                print([e.word for e in error.candidates])
         return x
 

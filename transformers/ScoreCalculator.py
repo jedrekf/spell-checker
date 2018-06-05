@@ -11,5 +11,4 @@ class ScoreCalculator:
             for error in problem.errors:
                 for candidate in error.candidates:
                     candidate.score = candidate.similarity / candidate.distance
-                print([e.score for e in error.candidates])
         return x

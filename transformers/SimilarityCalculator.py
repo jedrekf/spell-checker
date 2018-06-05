@@ -1,5 +1,5 @@
 from scipy import spatial
-
+import numpy as np
 
 class SimilarityCalculator:
 
@@ -13,5 +13,5 @@ class SimilarityCalculator:
         for problem in x:
             for error in problem.errors:
                 for candidate in error.candidates:
-                    candidate.similarity = 1 - spatial.distance.cosine(candidate.embedding, problem.embeddings)
+                    candidate.similarity = np.dot(candidate.embedding, problem.embeddings)/(np.linalg.norm(candidate.embedding)*np.linalg.norm(problem.embeddings))
         return x

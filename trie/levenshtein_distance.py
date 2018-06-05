@@ -2,8 +2,9 @@ from trie import trie_node as TrieNode
 
 
 class LevenshteinDistance:
-    def __init__(self):
+    def __init__(self, model):
         self.Trie = TrieNode.TrieNode()
+        self.model = model
 
     def create_trie(self, file_path):
         with open(file_path, mode="r", encoding="utf-8") as f:
@@ -11,6 +12,12 @@ class LevenshteinDistance:
             for line in content:
                 for word in line.split(', '):
                     self.Trie.insert(word)
+        #for word in self.model.get_corpus():
+        #    self.Trie.insert(word)
+
+    def create_trie_list(self, list):
+        for word in self.model.get_corpus():
+            self.Trie.insert(word)
 
     def search(self, word, max_cost):
         current_row = range(len(word) + 1)

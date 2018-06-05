@@ -10,6 +10,6 @@ class Tokenizer:
 
     def transform(self, x):
         for instance in x:
-            instance.tokens = fastText.FastText.tokenize(instance.sentence)
+            instance.tokens = fastText.FastText.tokenize(instance.sentence.lower())
         return x
 
