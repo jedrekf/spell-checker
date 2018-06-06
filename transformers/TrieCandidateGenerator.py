@@ -4,13 +4,14 @@ from instances.CandidateInstance import CandidateInstance
 
 
 class TrieCandidateGenerator:
-    def __init__(self, max_dist=2, model=None):
+    def __init__(self, vocab_size, max_dist=2, model=None):
         self.tree = LevenshteinDistance(model)
         self.max_dist = max_dist
         self.model = model
+        self.vocab_size = vocab_size
 
     def fit(self, x=None, y=None):
-        self.tree.create_trie_list(self.model.get_corpus())
+        self.tree.create_trie_list(self.model.get_corpus(self.vocab_size))
         return self
 
     def transform(self, x):

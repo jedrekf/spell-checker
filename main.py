@@ -12,6 +12,7 @@ from transformers.CandidateVectorizer import CandidateVectorizer
 from transformers.ScoreCalculator import ScoreCalculator
 from transformers.SimilarityCalculator import SimilarityCalculator
 from transformers.WordReplacer import WordReplacer
+from Spellchecker import Spellchecker
 
 def main(argv):
 
@@ -28,16 +29,10 @@ def main(argv):
 
     print("Search took %g s" % (end - start))
 
-
+'''
 ft = TextModel()
 len(list(ft.get_corpus()))
-x = [ProblemInstance(
-         "W okresie w którym powstawała powieść tematyka chłopska była bartzo popularna w sztuce i literaturze"),
-     ProblemInstance(
-         "Bitwa ta zakończyła się zwycięstwem wojsc polsko-litewskich i pogromem sił krzyżackich, nie została jednak wykorzystana do całkowitego zniszczenia zakonu"),
-    ProblemInstance('Istnieje kilka zachowanych źródeł dotyczących kitwy pod Grunwaldem i większość z nich zachowało się w polskich źródłach'),
-    ProblemInstance('Najpopularniejszym gatunkiem uprawianym i spożywanym jest tomidor zwyczajny'),
-    ProblemInstance('pomidor pomidor pomidor tomidor')]
+
 x = Tokenizer().fit().transform(x)
 x = ErrorDetector(ft).fit().transform(x)
 x = TrieCandidateGenerator(model=ft).fit().transform(x)
@@ -52,5 +47,16 @@ for instance in x:
         print(error.word)
         for candidate in sorted(error.candidates, key=lambda z: z.score):
             print(candidate.word, candidate.score, candidate.similarity, candidate.distance)
-
-
+'''
+x = ["W okresie w którym powstawała powieść tematyka chłopska była bartzo popularna w sztuce i literaturze",
+         "Bitwa ta zakończyła się zwycięstwem wojsc polsko-litewskich i pogromem sił krzyżackich, nie została jednak wykorzystana do całkowitego zniszczenia zakonu",
+    'Istnieje kilka zachowanych źródeł dotyczących kitwy pod Grunwaldem i większość z nich zachowało się w polskich źródłach',
+    'Najpopularniejszym gatunkiem uprawianym i spożywanym jest tomidor zwyczajny',
+    'pomidor pomidor pomidor tomidor']
+sp = Spellchecker()
+results = sp.transform(x)
+for instance in results:
+    for error in instance.errors:
+        print(error.word)
+        for candidate in sorted(error.candidates, key=lambda z: z.score):
+            print(candidate.word, candidate.score, candidate.similarity, candidate.distance)

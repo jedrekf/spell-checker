@@ -13,8 +13,8 @@ class TextModel:
     def get_word_vector(self, x):
         return self.model.get_word_vector(x)
 
-    def get_corpus(self):
-        return self.corpus[0][:60000]
+    def get_corpus(self, size=60000):
+        return self.corpus[0][:size]
 
     def get_frequency(self, word):
         if word in self.corpus[0]:
