@@ -11,10 +11,10 @@ from numpy import zeros as np_zeros  # pylint:disable=no-name-in-module
 from time import time
 
 # Parameters for the model and dataset
-MAX_INPUT_LEN = 40
+MAX_INPUT_LEN = 100
 MIN_INPUT_LEN = 3
-AMOUNT_OF_NOISE = 0.2 / MAX_INPUT_LEN
-NUMBER_OF_CHARS = 100  # 75
+AMOUNT_OF_NOISE = 0.6 / 100
+# NUMBER_OF_CHARS = 100  # 75
 CHARS = list("aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźżAĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ .")
 
 # Some cleanup:
@@ -39,9 +39,11 @@ class DataSet(object):
     """
 
     def __init__(self, dataset_filename, inverted=True):
+        
         self.inverted = inverted
 
         news = self.read_news(dataset_filename)
+        MAX_INPUT_LEN = max(news, key=len)
         questions, answers = self.generate_examples(news)
 
         chars_answer = set.union(*(set(answer) for answer in answers))
@@ -109,11 +111,11 @@ class DataSet(object):
         for line in lines:
             counter += Counter(line)
 
-        most_popular_chars = {key for key, _value in counter.most_common(NUMBER_OF_CHARS)}
-        print(most_popular_chars)
+        # most_popular_chars = {key for key, _value in counter.most_common(NUMBER_OF_CHARS)}
+        # print(most_popular_chars)
 
-        lines = [line for line in lines if line and not bool(set(line) - most_popular_chars)]
-        print("Left with {} lines of input corpus".format(len(lines)))
+        # lines = [line for line in lines if line and not bool(set(line) - most_popular_chars)]
+        # print("Left with {} lines of input corpus".format(len(lines)))
 
         return lines
 
@@ -122,44 +124,18 @@ class DataSet(object):
 
         print("Generating examples")
 
-        questions, answers, seen_answers = [], [], set()
+        questions, answers = [], corpus
 
-        while corpus:
-            line = corpus.pop()
-
-            while len(line) > MIN_INPUT_LEN:
-                if len(line) <= MAX_INPUT_LEN:
-                    answer = line
-                    line = ""
-                else:
-                    space_location = line.rfind(" ", MIN_INPUT_LEN, MAX_INPUT_LEN - 1)
-                    if space_location > -1:
-                        answer = line[:space_location]
-                        line = line[len(answer) + 1:]
-                    else:
-                        space_location = line.rfind(" ")  # no limits this time
-                        if space_location == -1:
-                            break  # we are done with this line
-                        else:
-                            line = line[space_location + 1:]
-                            continue
-
-                if answer and answer in seen_answers:
-                    continue
-
-                seen_answers.add(answer)
-                answers.append(answer)
-
-        print('Shuffle')
-        random_shuffle(answers)
-        print("Shuffled")
+        # print('Shuffle')
+        # random_shuffle(answers)
+        # print("Shuffled")
 
         for answer_index, answer in enumerate(answers):
             question = self.add_noise_to_string(answer, AMOUNT_OF_NOISE)
-            question += '.' * (MAX_INPUT_LEN - len(question))
-            answer += "." * (MAX_INPUT_LEN - len(answer))
+            # question += '.' * (MAX_INPUT_LEN - len(question))
+            # answer += "." * (MAX_INPUT_LEN - len(answer))
             answers[answer_index] = answer
-            assert len(answer) == MAX_INPUT_LEN
+            # assert len(answer) == MAX_INPUT_LEN
 
             question = question[::-1] if self.inverted else question
             questions.append(question)
