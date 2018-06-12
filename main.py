@@ -1,5 +1,6 @@
 import time
 import sys
+import csv
 
 from TextModel import TextModel
 from instances.ProblemInstance import ProblemInstance
@@ -48,15 +49,47 @@ for instance in x:
         for candidate in sorted(error.candidates, key=lambda z: z.score):
             print(candidate.word, candidate.score, candidate.similarity, candidate.distance)
 '''
-x = ["W okresie w którym powstawała powieść tematyka chłopska była bartzo popularna w sztuce i literaturze",
-         "Bitwa ta zakończyła się zwycięstwem wojsc polsko-litewskich i pogromem sił krzyżackich, nie została jednak wykorzystana do całkowitego zniszczenia zakonu",
-    'Istnieje kilka zachowanych źródeł dotyczących kitwy pod Grunwaldem i większość z nich zachowało się w polskich źródłach',
-    'Najpopularniejszym gatunkiem uprawianym i spożywanym jest tomidor zwyczajny',
-    'pomidor pomidor pomidor tomidor']
+x = []
+y = []
+with open('invalid_sentences_korpus.txt') as f:
+    x = f.readlines()
+    x = [z.strip() for z in x]
+    x = [''.join(ch for ch in z if (ch.isalnum()) or ch == ' ') for z in x]
+with open('sentences_korpus.txt') as f:
+    y = f.readlines()
+    y = [z.strip() for z in y]
+    y = [''.join(ch for ch in z if (ch.isalnum()) or ch == ' ') for z in y]
+x = x[:300]
+y = y[:300]
+word_count = 0
+error_count = 0
+correction_count = 0
+detected_count = 0
 sp = Spellchecker()
 results = sp.transform(x)
-for instance in results:
+corrections = []
+for idx, instance in enumerate(results):
     for error in instance.errors:
         print(error.word)
         for candidate in sorted(error.candidates, key=lambda z: z.score):
             print(candidate.word, candidate.score, candidate.similarity, candidate.distance)
+    correct = y[idx].lower().split(' ')
+    corrected = instance.get_corrected_sentence().lower().split(' ')
+    wrong = x[idx].lower().split(' ')
+    for token in zip(correct, wrong, corrected, instance.is_error):
+        word_count = word_count + 1
+        if token[0] != token[1]:
+            error_count = error_count + 1
+            if token[0] == token[2]:
+                correction_count = correction_count + 1
+            if token[3]:
+                detected_count = detected_count + 1
+            corrections.append(token)
+print(correction_count)
+print(detected_count)
+print(error_count)
+print(word_count)
+with open('results.csv', 'w') as out:
+    csv_out = csv.writer(out)
+    for row in corrections:
+        csv_out.writerow(row)

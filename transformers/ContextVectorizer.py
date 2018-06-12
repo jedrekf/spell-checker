@@ -26,6 +26,9 @@ class ContextVectorizer:
                 if not problem.is_error[i] and token not in self.stopwords:
                     emb.append(self.model.get_word_vector(token))
                     freqs.append(self.model.get_frequency(token))
+            if len(emb) == 0:
+                emb.append(self.model.get_word_vector('aby'))
+                emb.append(self.model.get_frequency('aby'))
             res = np.zeros(emb[0].shape)
             for idx, e in enumerate(emb):
                 if self.weighting == 'natural':

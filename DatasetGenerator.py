@@ -15,7 +15,7 @@ MAX_INPUT_LEN = 100
 MIN_INPUT_LEN = 3
 AMOUNT_OF_NOISE = 0.6 / 100
 # NUMBER_OF_CHARS = 100  # 75
-CHARS = list("aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźżAĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ .")
+CHARS = list("aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźżAĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ.")
 
 # Some cleanup:
 NORMALIZE_WHITESPACE_REGEX = re.compile(r'[^\S\n]+', re.UNICODE)  # match all whitespace except newlines
@@ -64,10 +64,14 @@ class DataSet(object):
         if rand() < amount_of_noise * len(a_string):
             # Replace a character with a random character
             random_char_position = random_randint(len(a_string))
+            while a_string[random_char_position] == ' ':
+                random_char_position = random_randint(len(a_string))
             a_string = a_string[:random_char_position] + random_choice(CHARS[:-1]) + a_string[random_char_position + 1:]
         if rand() < amount_of_noise * len(a_string):
             # Delete a character
             random_char_position = random_randint(len(a_string))
+            while a_string[random_char_position] == ' ':
+                random_char_position = random_randint(len(a_string))
             a_string = a_string[:random_char_position] + a_string[random_char_position + 1:]
         if len(a_string) < MAX_INPUT_LEN and rand() < amount_of_noise * len(a_string):
             # Add a random character
