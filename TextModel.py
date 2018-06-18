@@ -8,7 +8,7 @@ class TextModel:
         self.corpus = self.model.get_words(include_freq=True)
 
     def is_in_dict(self, x):
-        return x in self.model.get_words()
+        return self.model.get_word_id(x) != -1
 
     def get_word_vector(self, x):
         return self.model.get_word_vector(x)
