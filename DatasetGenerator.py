@@ -135,8 +135,9 @@ class DataSet(object):
         # print('Shuffle')
         # random_shuffle(answers)
         # print("Shuffled")
-
+        
         for answer_index, answer in enumerate(answers):
+            print("corpus generation: " + str((answer_index/len(corpus)) * 100) + "%")
             question = self.add_noise_to_string(answer, AMOUNT_OF_NOISE)
             # question += '.' * (MAX_INPUT_LEN - len(question))
             # answer += "." * (MAX_INPUT_LEN - len(answer))
