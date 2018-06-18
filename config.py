@@ -1,5 +1,5 @@
 MICROSERVICE_CONNECTION="localhost:8080"
 DATA_MESSAGES_PATH="../data/messages.json"
 PROCESSED_DATA_OUTPUT_PATH="../data/processed_messages.json"
-MODEL_PATH = "/home/piotr/notebooks/cc.pl.300.bin"
+MODEL_PATH = "cc.pl.300.bin"
 CORPUS_PATH = "/home/piotr/Uczelnia/TextMining/spell-checker/korpus.txt"

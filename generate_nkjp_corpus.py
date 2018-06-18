@@ -18,7 +18,7 @@ args = sys.argv[1:]
 
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
-corpus_path = args[0] if len(args) > 0 else '/home/jedrek/Downloads/NKJP/'
+corpus_path = args[0] if len(args) > 0 else '/home/piotr/Downloads/corpus'
 sentences = []
 for subdir, dirs, files in os.walk(corpus_path):
     # if name contains only numbers the set doesn't contain errors

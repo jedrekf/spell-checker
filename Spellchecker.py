@@ -28,3 +28,4 @@ class Spellchecker:
         x = self.similarity_calculator.transform(x)
         x = self.score_calculator.transform(x)
         return x
+
