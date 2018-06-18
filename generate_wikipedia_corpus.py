@@ -18,45 +18,46 @@ args = sys.argv[1:]
 
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
-corpus_path = args[0] if len(args) > 0 else '/home/jedrek/Downloads/NKJP/'
+corpus_path = args[0] if len(args) > 0 else '/home/jedrek/Downloads/plwiki3_1/'
 sentences = []
+subdir_count = 0
+
 for subdir, dirs, files in os.walk(corpus_path):
+    subdir_count += 1
+
+cleanr = re.compile('<.*?>')
+
+for counter, (subdir, dirs, files) in enumerate(os.walk(corpus_path)):
     # if name contains only numbers the set doesn't contain errors
     print(subdir)
-    foldername = subdir.split('/')[-1]
-    if foldername is '':
-        foldername = "a"
-
-    result = re.search("[a-zA-Z]", foldername)
-
-    if result is None:
-        # its good we take it
-        xmldoc=minidom.parse(subdir + '/text.xml')
-        for node in xmldoc.getElementsByTagName('ab'):
-            node_text = node.firstChild.nodeValue
-            node_sentences = tokenizer.tokenize(node_text)
-            node_sentences = [s for s in new_sentences if len(s)>5]
-            sentences = sentences + node_sentences
+    print("%: " + str((counter/subdir_count)*100) )
+    for file in files:
+        text = open(subdir+'/'+file, encoding='utf-8').read()
+        text = re.sub(cleanr, '', text)
+        lines = text.split('\n')
+        new_sentences = tokenizer.tokenize(' '.join(lines))
+        new_sentences = [s for s in new_sentences if len(s)>5]
+        sentences = sentences + new_sentences
 
 print(sentences[:10])
 
 sentences = '\n'.join(sentences)
-temp_file = 'nkjp_sentences_korpus.temp.txt'
+temp_file = 'wiki_sentences_korpus.temp.txt'
 with open(temp_file, 'w') as the_file:
     the_file.write(sentences)
 
-dataset = DataSet('nkjp_sentences_korpus.temp.txt', inverted=False)
-os.remove(temp_file)
+dataset = DataSet('wiki_sentences_korpus.temp.txt', inverted=False)
+# os.remove(temp_file)
 
 print("questions")
 print(dataset.questions_train[:2])
 print("answers")
 print(dataset.answers[:2])
 
-output_question_file = args[1] if len(args)>1 else 'nkjp_invalid_sentences_korpus.txt'
+output_question_file = args[1] if len(args)>1 else 'wiki_invalid_sentences_korpus.txt'
 with open(output_question_file, 'w') as the_file:
     the_file.write("\n".join(dataset.questions_train))
 
-output_answer_file = args[2] if len(args)>2 else 'nkjp_sentences_korpus.txt'
+output_answer_file = args[2] if len(args)>2 else 'wiki_sentences_korpus.txt'
 with open(output_answer_file, 'w') as the_file:
     the_file.write("\n".join(dataset.answers))
