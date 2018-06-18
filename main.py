@@ -63,16 +63,16 @@ word_count = 0
 error_count = 0
 correction_count = 0
 detected_count = 0
-sp = Spellchecker()
+sp = Spellchecker(freq_weighting='log', dist_weight=0.6)
 for i in range(0, len(x), 100):
     try:
         end_idxx = min(len(x), i+100)
         results = sp.transform(x[i:end_idxx])
         corrections = []
         for idx, instance in enumerate(results):
-            correct = y[idx].lower().split(' ')
+            correct = y[i+idx].lower().split(' ')
             corrected = instance.get_corrected_sentence().lower().split(' ')
-            wrong = x[idx].lower().split(' ')
+            wrong = x[i+idx].lower().split(' ')
             for token in zip(correct, wrong, corrected, instance.is_error):
                 word_count = word_count + 1
                 if token[0] != token[1]:
