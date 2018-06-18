@@ -64,13 +64,13 @@ class DataSet(object):
         if rand() < amount_of_noise * len(a_string):
             # Replace a character with a random character
             random_char_position = random_randint(len(a_string))
-            while a_string[random_char_position] == ' ':
+            while a_string[random_char_position].isspace():
                 random_char_position = random_randint(len(a_string))
             a_string = a_string[:random_char_position] + random_choice(CHARS[:-1]) + a_string[random_char_position + 1:]
         if rand() < amount_of_noise * len(a_string):
             # Delete a character
             random_char_position = random_randint(len(a_string))
-            while a_string[random_char_position] == ' ':
+            while a_string[random_char_position].isspace():
                 random_char_position = random_randint(len(a_string))
             a_string = a_string[:random_char_position] + a_string[random_char_position + 1:]
         if len(a_string) < MAX_INPUT_LEN and rand() < amount_of_noise * len(a_string):
@@ -80,6 +80,8 @@ class DataSet(object):
         if rand() < amount_of_noise * len(a_string):
             # Transpose 2 characters
             random_char_position = random_randint(len(a_string) - 1)
+            while a_string[random_char_position].isspace() or a_string[random_char_position + 1].isspace():
+                random_char_position = random_randint(len(a_string))
             a_string = (a_string[:random_char_position] +
                         a_string[random_char_position + 1] +
                         a_string[random_char_position] +

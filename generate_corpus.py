@@ -7,8 +7,9 @@ import nltk.data
 from DatasetGenerator import DataSet
 
 # use this to download data for tokenizer for splitting sentences
-# import nltk
-# nltk.download('punkt')
+import nltk
+
+nltk.download('punkt')
 
 args = sys.argv[1:]
 

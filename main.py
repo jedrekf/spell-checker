@@ -14,84 +14,56 @@ from transformers.ScoreCalculator import ScoreCalculator
 from transformers.SimilarityCalculator import SimilarityCalculator
 from transformers.WordReplacer import WordReplacer
 from Spellchecker import Spellchecker
+import datetime
 
-def main(argv):
+def main():
+    start_time = datetime.datetime.now()
+    x = []
+    y = []
+    with open('wiki_invalid_sentences_korpus.txt') as f:
+        x = f.readlines()
+        x = [z.strip() for z in x]
+        x = [''.join(ch for ch in z if (ch.isalnum()) or ch == ' ') for z in x]
+    with open('wiki_sentences_korpus.txt') as f:
+        y = f.readlines()
+        y = [z.strip() for z in y]
+        y = [''.join(ch for ch in z if (ch.isalnum()) or ch == ' ') for z in y]
+    word_count = 0
+    error_count = 0
+    correction_count = 0
+    detected_count = 0
+    sp = Spellchecker(freq_weighting='log', dist_weight=0.4, corpus_size=10**5)
+    for i in range(0, len(x), 100):
+        try:
+            end_idxx = min(len(x), i+100)
+            results = sp.transform(x[i:end_idxx])
+            corrections = []
+            for idx, instance in enumerate(results):
+                correct = y[i+idx].lower().split(' ')
+                corrected = instance.get_corrected_sentence().lower().split(' ')
+                wrong = x[i+idx].lower().split(' ')
+                for token in zip(correct, wrong, corrected, instance.is_error):
+                    word_count = word_count + 1
+                    if token[0] != token[1]:
+                        error_count = error_count + 1
+                        if token[0] == token[2]:
+                            correction_count = correction_count + 1
+                        if token[3]:
+                            detected_count = detected_count + 1
+                        corrections.append(token)
+            print('Batch number: '+str(i))
+            print(correction_count)
+            print(detected_count)
+            print(error_count)
+            print(word_count)
+            with open('results_'+str(start_time)+'.csv', 'a') as out:
+                csv_out = csv.writer(out)
+                for row in corrections:
+                    csv_out.writerow(row)
+        except:
+            with open('error.log', 'a') as myfile:
+                myfile.write('Error at batch: '+i+'\n')
+ 
 
-    ld = LevenshteinDistance()
-
-    ld.create_trie_list('./korpus.txt')
-
-    start = time.time()
-    results = ld.search('przejąc', 1)
-    end = time.time()
-
-    for result in results:
-        print(result)
-
-    print("Search took %g s" % (end - start))
-
-'''
-ft = TextModel()
-len(list(ft.get_corpus()))
-
-x = Tokenizer().fit().transform(x)
-x = ErrorDetector(ft).fit().transform(x)
-x = TrieCandidateGenerator(model=ft).fit().transform(x)
-x = ContextVectorizer(ft).fit().transform(x)
-x = CandidateVectorizer(ft).fit().transform(x)
-x = SimilarityCalculator().fit().transform(x)
-x = ScoreCalculator().fit().transform(x)
-#y = WordReplacer().fit().transform(x)
-#print(y)
-for instance in x:
-    for error in instance.errors:
-        print(error.word)
-        for candidate in sorted(error.candidates, key=lambda z: z.score):
-            print(candidate.word, candidate.score, candidate.similarity, candidate.distance)
-'''
-x = []
-y = []
-with open('invalid_sentences_korpus.txt') as f:
-    x = f.readlines()
-    x = [z.strip() for z in x]
-    x = [''.join(ch for ch in z if (ch.isalnum()) or ch == ' ') for z in x]
-with open('sentences_korpus.txt') as f:
-    y = f.readlines()
-    y = [z.strip() for z in y]
-    y = [''.join(ch for ch in z if (ch.isalnum()) or ch == ' ') for z in y]
-word_count = 0
-error_count = 0
-correction_count = 0
-detected_count = 0
-sp = Spellchecker(freq_weighting='log', dist_weight=0.6)
-for i in range(0, len(x), 100):
-    try:
-        end_idxx = min(len(x), i+100)
-        results = sp.transform(x[i:end_idxx])
-        corrections = []
-        for idx, instance in enumerate(results):
-            correct = y[i+idx].lower().split(' ')
-            corrected = instance.get_corrected_sentence().lower().split(' ')
-            wrong = x[i+idx].lower().split(' ')
-            for token in zip(correct, wrong, corrected, instance.is_error):
-                word_count = word_count + 1
-                if token[0] != token[1]:
-                    error_count = error_count + 1
-                    if token[0] == token[2]:
-                        correction_count = correction_count + 1
-                    if token[3]:
-                        detected_count = detected_count + 1
-                    corrections.append(token)
-        print('Batch number: '+str(i))
-        print(correction_count)
-        print(detected_count)
-        print(error_count)
-        print(word_count)
-        with open('results.csv', 'a') as out:
-            csv_out = csv.writer(out)
-            for row in corrections:
-                csv_out.writerow(row)
-    except:
-        with open('error.log', 'a') as myfile:
-            myfile.write('Error at batch: '+i+'\n')
-     
+if __name__ == "__main__":
+    main()
